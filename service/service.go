@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -47,8 +48,13 @@ func (s *service) RunAndServe() {
 	s.handler.HandleFunc("/health", s.Health).Methods("GET")
 	s.handler.HandleFunc("/", s.Root)
 
-	fmt.Println("listen on port :8080")
-	if err := http.ListenAndServe(":8080", s.handler); err != nil {
+	var port string
+	if port = os.Getenv("PORT"); port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("listen on port %s", port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), s.handler); err != nil {
 		log.Fatal("cloud not start server")
 	}
 }
