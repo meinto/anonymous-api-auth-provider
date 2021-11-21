@@ -11,6 +11,15 @@ Define your own `challenge.sh` & `response.sh` and mount them into the docker im
 
 Define an API-Key and provide it in the environement variables of the docker image.
 
+## Docker
+
+```bash
+# build
+docker build -f docker/Dockerfile -t authprovider .
+# run
+docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts authprovider
+```
+
 ## Known Limitations
 
 - currently no encryption of post bodys

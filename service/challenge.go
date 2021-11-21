@@ -10,7 +10,7 @@ import (
 )
 
 func (s *service) Challenge(w http.ResponseWriter, r *http.Request) {
-	cmd, err := exec.Command("/bin/bash", s.scriptPath+"/challenge.sh").Output()
+	cmd, err := exec.Command("/bin/bash", s.scriptPath+"/scripts/challenge.sh").Output()
 	if err != nil {
 		fmt.Printf("error %s", err)
 	}
@@ -22,7 +22,7 @@ func (s *service) Challenge(w http.ResponseWriter, r *http.Request) {
 
 func (s *service) Response(key string) (res string, err error) {
 	if cachedChallenge, ok := s.cache.Get(key); ok {
-		cmd, err := exec.Command("/bin/bash", s.scriptPath+"/response.sh", string(cachedChallenge.Challenge)).Output()
+		cmd, err := exec.Command("/bin/bash", s.scriptPath+"/scripts/response.sh", string(cachedChallenge.Challenge)).Output()
 		if err != nil {
 			fmt.Printf("error %s", err)
 		}
