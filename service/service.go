@@ -42,11 +42,21 @@ func (s *service) Cache() *Cache {
 }
 
 func (s *service) RunAndServe() {
-	s.handler.HandleFunc("/challenge", s.Challenge)
+	s.handler.HandleFunc("/challenge", s.Challenge).Methods("GET")
 	s.handler.HandleFunc("/token", s.Token).Methods("POST")
+	s.handler.HandleFunc("/health", s.Health).Methods("GET")
+	s.handler.HandleFunc("/", s.Root)
 
 	fmt.Println("listen on port :8080")
 	if err := http.ListenAndServe(":8080", s.handler); err != nil {
 		log.Fatal("cloud not start server")
 	}
+}
+
+func (s *service) Health(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (s *service) Root(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("i'm alive!"))
 }
