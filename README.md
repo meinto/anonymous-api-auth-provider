@@ -17,7 +17,7 @@ Define an API-Key and provide it in the environement variables of the docker ima
 # build
 docker build -f docker/Dockerfile -t authprovider .
 # run
-docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts authprovider
+docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key authprovider
 ```
 
 ## Known Limitations
