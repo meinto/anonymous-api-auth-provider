@@ -22,6 +22,5 @@ docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/script
 
 ## Known Limitations
 
-- currently no encryption of post bodys
 - clustering currently not possible  
   will be possible in the future with redis integration
