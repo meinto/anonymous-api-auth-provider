@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -26,7 +27,13 @@ func (s *service) Response(key string) (res string, err error) {
 		if err != nil {
 			fmt.Printf("error %s", err)
 		}
-		return strings.TrimSpace(string(cmd)), nil
+		response := strings.TrimSpace(string(cmd))
+		hash := sha256.New()
+		_, err = hash.Write([]byte(response))
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%x", hash.Sum(nil)), nil
 	} else {
 		return "", errors.New("challenge not found")
 	}

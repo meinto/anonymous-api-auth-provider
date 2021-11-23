@@ -1,7 +1,9 @@
 package service_test
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -39,6 +41,11 @@ var _ = Describe("challange endpoint", func() {
 })
 
 var _ = Describe("response function", func() {
+
+	correctResponseHash := sha256.New()
+	correctResponseHash.Write([]byte("the-response-for-the-challenge the-challenge"))
+	correctResponseString := fmt.Sprintf("%x", correctResponseHash.Sum(nil))
+
 	It("returns the response corresponding to the challenge", func() {
 		scriptPath, _ := filepath.Abs("../")
 		s := service.NewService(service.ServiceOptions{
@@ -58,6 +65,6 @@ var _ = Describe("response function", func() {
 		result, err := s.Response(key)
 
 		Expect(err).To(BeNil())
-		Expect(result).To(Equal("the-response-for-the-challenge the-challenge"))
+		Expect(result).To(Equal(correctResponseString))
 	})
 })

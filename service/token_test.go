@@ -2,8 +2,10 @@ package service_test
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -19,6 +21,9 @@ var _ = Describe("token endpoint", func() {
 
 	var s service.Service
 	var w *httptest.ResponseRecorder
+	correctResponseHash := sha256.New()
+	correctResponseHash.Write([]byte("the-response-for-the-challenge the-challenge"))
+	correctResponseString := fmt.Sprintf("%x", correctResponseHash.Sum(nil))
 
 	BeforeEach(func() {
 		scriptPath, _ := filepath.Abs("../")
@@ -40,7 +45,7 @@ var _ = Describe("token endpoint", func() {
 
 		postBody, _ := json.Marshal(service.TokenRequestBody{
 			Key:      key,
-			Response: "the-response-for-the-challenge the-challenge",
+			Response: correctResponseString,
 		})
 		req, _ := http.NewRequest(http.MethodPost, "http://localhost:8080/token", bytes.NewReader(postBody))
 		w = httptest.NewRecorder()
@@ -87,7 +92,7 @@ var _ = Describe("token endpoint", func() {
 	It("rejects if the key for the challenge is wrong", func() {
 		postBody, _ := json.Marshal(service.TokenRequestBody{
 			Key:      "wrong-key",
-			Response: "the-response-for-the-challenge the-challenge",
+			Response: correctResponseString,
 		})
 		req, _ := http.NewRequest(http.MethodPost, "http://localhost:8080/token", bytes.NewReader(postBody))
 		w = httptest.NewRecorder()
@@ -109,7 +114,7 @@ var _ = Describe("token endpoint", func() {
 
 		postBody, _ := json.Marshal(service.TokenRequestBody{
 			Key:      key,
-			Response: "the-response-for-the-challenge the-challenge",
+			Response: correctResponseString,
 		})
 		req, _ := http.NewRequest(http.MethodPost, "http://localhost:8080/token", bytes.NewReader(postBody))
 		w = httptest.NewRecorder()
