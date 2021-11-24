@@ -37,7 +37,7 @@ Define your own `challenge.sh` & `response.sh` and mount them into the docker im
 # build
 docker build -f docker/Dockerfile -t authprovider .
 # run
-docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key authprovider
+docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 authprovider
 ```
 
 ## Known Limitations

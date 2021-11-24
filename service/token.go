@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -48,10 +50,22 @@ func (s *service) Token(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("invalid response", requestBody.Response)
 	}
 
+	expire := os.Getenv("TOKEN_EXPIRE")
+	if expire == "" {
+		expire = "3600"
+	}
+
+	expireTime, err := strconv.Atoi(expire)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	signingKey := []byte(s.apiKey)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Unix() + 15000,
+		ExpiresAt: time.Now().Unix() + int64(expireTime),
 	})
 
 	var signedToken string
