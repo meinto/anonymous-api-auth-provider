@@ -23,6 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
+          flavor: latest=auto
           images: meinto/public-api-auth-provider
 
       - name: Build and push Docker image
