@@ -4,7 +4,7 @@ Inspired by: https://hackernoon.com/improve-the-security-of-api-keys-v5kp3wdu
 
 ## Architecture
 
-The basic idea is, to prevent unauthorised access of a public endpoint by bots or bad clients. Only known clients should be able to use the api. For example when you have a `POST` interface which should only be able to request by your own website. All requests from other sources to this public `POST` endpoint should be rejected.
+The basic idea is, to prevent unauthorised access of a public endpoint by bots or bad clients. Only known clients should be able to use the api. For example when you have a `POST` interface which should only be able to be requested by your own website. All requests from other clients to this public `POST` endpoint should be rejected.
 
 This Repository introduces a separate serive, the "Anonymus API Auth Provider" (`aaap`), which can be requested to retrieve an access-token. The public endpoint can then validate this token.
 
