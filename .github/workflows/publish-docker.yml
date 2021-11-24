@@ -1,8 +1,9 @@
 name: Publish Docker image
 
 on:
-  release:
-    types: [release]
+  push:
+    branches:
+      - "release"
 
 jobs:
   push_to_registry:
@@ -22,6 +23,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
+          flavor: latest=auto
+          tags: type=raw,latest
           images: meinto/public-api-auth-provider
 
       - name: Build and push Docker image
