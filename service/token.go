@@ -2,11 +2,13 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type TokenRequestBody struct {
@@ -19,6 +21,7 @@ type TokenResponseBody struct {
 }
 
 func (s *service) Token(w http.ResponseWriter, r *http.Request) {
+	tokenShouldBeValid := true
 	requestBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -28,20 +31,21 @@ func (s *service) Token(w http.ResponseWriter, r *http.Request) {
 	var requestBody TokenRequestBody
 	err = json.Unmarshal(requestBodyBytes, &requestBody)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		tokenShouldBeValid = false
+		fmt.Println(err)
 	}
 
 	response, err := s.Response(requestBody.Key)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		tokenShouldBeValid = false
+		fmt.Println(err)
 	}
 	defer s.cache.Remove(requestBody.Key)
 
 	if response != requestBody.Response {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+		tokenShouldBeValid = false
+		fmt.Println("not authorised")
+		fmt.Println("invalid response", requestBody.Response)
 	}
 
 	signingKey := []byte(s.apiKey)
@@ -50,8 +54,16 @@ func (s *service) Token(w http.ResponseWriter, r *http.Request) {
 		ExpiresAt: time.Now().Unix() + 15000,
 	})
 
-	signedToken, err := token.SignedString(signingKey)
+	var signedToken string
+	if tokenShouldBeValid {
+		signedToken, err = token.SignedString(signingKey)
+	} else {
+		uuidWithHyphen := uuid.New()
+		signedToken, err = token.SignedString([]byte(uuidWithHyphen.String()))
+	}
+
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -60,6 +72,7 @@ func (s *service) Token(w http.ResponseWriter, r *http.Request) {
 		AccessToken: signedToken,
 	})
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

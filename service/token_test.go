@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"reflect"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/meinto/public-api-auth-provider-service/service"
@@ -67,7 +68,7 @@ var _ = Describe("token endpoint", func() {
 		Expect(token.Valid).To(BeTrue())
 	})
 
-	It("rejects if the response for the challenge is wrong", func() {
+	It("returns an invalid token if the response for the challenge is wrong", func() {
 		res := w.Result()
 		bodyBytes, _ := io.ReadAll(res.Body)
 		key := base64.StdEncoding.EncodeToString(bodyBytes)
@@ -85,11 +86,21 @@ var _ = Describe("token endpoint", func() {
 		s.Token(w, req)
 
 		res = w.Result()
+		bodyBytes, _ = io.ReadAll(res.Body)
 
-		Expect(res.StatusCode).To(Equal(http.StatusInternalServerError))
+		var responseBody service.TokenResponseBody
+		json.Unmarshal(bodyBytes, &responseBody)
+
+		token, err := jwt.Parse(responseBody.AccessToken, func(token *jwt.Token) (interface{}, error) {
+			return []byte("test-key"), nil
+		})
+
+		Expect(res.StatusCode).To(Equal(http.StatusOK))
+		Expect(reflect.TypeOf(err)).To(Equal(reflect.TypeOf(&jwt.ValidationError{})))
+		Expect(token.Valid).To(BeFalse())
 	})
 
-	It("rejects if the key for the challenge is wrong", func() {
+	It("returns an invalid token if the key for the challenge is wrong", func() {
 		postBody, _ := json.Marshal(service.TokenRequestBody{
 			Key:      "wrong-key",
 			Response: correctResponseString,
@@ -103,11 +114,21 @@ var _ = Describe("token endpoint", func() {
 		s.Token(w, req)
 
 		res := w.Result()
+		bodyBytes, _ := io.ReadAll(res.Body)
 
-		Expect(res.StatusCode).To(Equal(http.StatusInternalServerError))
+		var responseBody service.TokenResponseBody
+		json.Unmarshal(bodyBytes, &responseBody)
+
+		token, err := jwt.Parse(responseBody.AccessToken, func(token *jwt.Token) (interface{}, error) {
+			return []byte("test-key"), nil
+		})
+
+		Expect(res.StatusCode).To(Equal(http.StatusOK))
+		Expect(reflect.TypeOf(err)).To(Equal(reflect.TypeOf(&jwt.ValidationError{})))
+		Expect(token.Valid).To(BeFalse())
 	})
 
-	It("rejects if the challenge is already solved", func() {
+	It("returns an invalid token if the challenge is already solved", func() {
 		res := w.Result()
 		bodyBytes, _ := io.ReadAll(res.Body)
 		key := base64.StdEncoding.EncodeToString(bodyBytes)
@@ -125,7 +146,17 @@ var _ = Describe("token endpoint", func() {
 		s.Token(w, req)
 
 		res = w.Result()
+		bodyBytes, _ = io.ReadAll(res.Body)
 
-		Expect(res.StatusCode).To(Equal(http.StatusInternalServerError))
+		var responseBody service.TokenResponseBody
+		json.Unmarshal(bodyBytes, &responseBody)
+
+		token, err := jwt.Parse(responseBody.AccessToken, func(token *jwt.Token) (interface{}, error) {
+			return []byte("test-key"), nil
+		})
+
+		Expect(res.StatusCode).To(Equal(http.StatusOK))
+		Expect(reflect.TypeOf(err)).To(Equal(reflect.TypeOf(&jwt.ValidationError{})))
+		Expect(token.Valid).To(BeFalse())
 	})
 })
