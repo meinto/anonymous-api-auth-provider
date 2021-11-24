@@ -52,6 +52,12 @@ docker build -f docker/Dockerfile -t authprovider .
 docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 -e PORT=8080 authprovider
 ```
 
+## Development
+
+```bash
+API_KEY=your-key go run main.go
+```
+
 ## Known Limitations
 
 - clustering currently not possible  
