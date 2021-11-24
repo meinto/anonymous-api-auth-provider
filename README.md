@@ -33,7 +33,9 @@ Define your own `challenge.sh` & `response.sh` and mount them into the docker im
 
 ## Docker
 
-### Build your own docker image with integrated `challenge.sh` & `response.sh`
+### Build your own docker image
+
+Integrate your `challenge.sh` & `response.sh` directly in your own docker image. It is also advisable to install some more programs, for example to generate uuids which can be used for designing your custom challenge/response.
 
 ```bash
 cd example
@@ -43,7 +45,9 @@ docker build -t authprovider-example .
 docker run -p 8080:8080 -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 -e PORT=8080 authprovider-example
 ```
 
-### Mount `challange.sh` & `response.sh` as volume
+### Mount volume
+
+You can also mount your custom `challenge.sh` & `response.sh`.
 
 ```bash
 # build
