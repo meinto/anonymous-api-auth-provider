@@ -1,24 +1,24 @@
-# Public API Auth Provider
+# Anonymus API Auth Provider
 
 Inspired by: https://hackernoon.com/improve-the-security-of-api-keys-v5kp3wdu
 
 ## Architecture
 
-The basic idea is, to prevent unauthorised access of public apis by for example bots or bad clients. For example when you have a `POST` interface which should only be requested by your own website. All other requests to this public `POST` endpoint should be rejected.
+The basic idea is, to prevent unauthorised access of a public endpoint by bots or bad clients. Only known clients should be able to use the api. For example when you have a `POST` interface which should only be able to request by your own website. All requests from other sources to this public `POST` endpoint should be rejected.
 
-This Repository introduces a separate serive, the "Public API Auth Provider" (`paap`), which can be requested to retrieve a session token, which can be used to request the public `POST` api.
+This Repository introduces a separate serive, the "Anonymus API Auth Provider" (`aaap`), which can be requested to retrieve an access-token. The public endpoint can then validate this token.
 
-The `paap` and the public api therefore share an api-key as secret. The `paap` signs the token with the api-key and the public api can check if the signature was signed with the api-key. Otherwise the public api would reject the request.
+The `aaap` and the public endpoint therefore share an api-key as secret. The `aaap` signs the token with the api-key and the public endpoint can check if the signature was signed with this api-key. Otherwise the public endpoint would reject the request.
 
-But before the `paap` generates the session token and sends it to the requesting client, the client has to solve a challenge. This challenge is the shared secret between the `paap` and the authorised client (e.g. your website):
+But before the `aaap` generates the access-token and sends it to the requesting client, the client has to solve a challenge. This challenge is the shared secret between the `aaap` and the authorised client (e.g. your website):
 
 ![Authorised Client](./assets/authorised-client.png)
 
-A bad client or a bot cannot solve the challenge provided by the `paap`. In this case the `paap` would send the client a invalid session token, and the public api check for the token signature would fail. The request would be rejected:
+A bad client or a bot cannot solve the challenge provided by the `aaap`. In this case the `aaap` would send an invalid access-token to the client, and the public endpoint check for the token signature would fail. The request would be rejected:
 
 ![Bot or Bad Client](./assets/bad-client.png)
 
-An attacker of this public api would have to reverse engineer the authorised client, to find out how the challenge of the `paap` could be solved. This comes with an reasonable amount of effort especially when the code is obfuscated.
+An attacker of this public endpoint would have to reverse engineer the authorised client, to find out how the challenge of the `aaap` can be solved. This comes with an reasonable amount of effort especially when the code of the authorised client is obfuscated.
 
 ## Usage
 
@@ -29,7 +29,7 @@ Define your own `challenge.sh` & `response.sh` and mount them into the docker im
   :warning: The response must also be implemented on your client.
 - Define an api-key and provide it in the environement variables of the docker image.
 - Define how long the token should be valid  
-  :warning: The token lifetime should be validated in your public api, as well as the token signature.
+  :warning: The token lifetime should be validated in your public endpoint, as well as the token signature.
 
 ## Docker
 
