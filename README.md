@@ -33,6 +33,18 @@ Define your own `challenge.sh` & `response.sh` and mount them into the docker im
 
 ## Docker
 
+### Build your own docker image with integrated `challenge.sh` & `response.sh`
+
+```bash
+cd example
+# build
+docker build -t authprovider-example .
+# run
+docker run -p 8080:8080 -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 authprovider-example
+```
+
+### Mount `challange.sh` & `response.sh` as volume
+
 ```bash
 # build
 docker build -f docker/Dockerfile -t authprovider .
