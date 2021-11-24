@@ -40,7 +40,7 @@ cd example
 # build
 docker build -t authprovider-example .
 # run
-docker run -p 8080:8080 -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 authprovider-example
+docker run -p 8080:8080 -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 -e PORT=8080 authprovider-example
 ```
 
 ### Mount `challange.sh` & `response.sh` as volume
@@ -49,7 +49,7 @@ docker run -p 8080:8080 -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 authprovide
 # build
 docker build -f docker/Dockerfile -t authprovider .
 # run
-docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 authprovider
+docker run -p 8080:8080 -v `pwd`/path/to/your/own/scripts/folder:/service/scripts -e API_KEY=your-api-key -e TOKEN_EXPIRE=3600 -e PORT=8080 authprovider
 ```
 
 ## Known Limitations
