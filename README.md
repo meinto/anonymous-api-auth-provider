@@ -1,4 +1,4 @@
-# Anonymus API Auth Provider
+# Anonymous API Auth Provider
 
 Inspired by: https://hackernoon.com/improve-the-security-of-api-keys-v5kp3wdu
 
@@ -6,7 +6,7 @@ Inspired by: https://hackernoon.com/improve-the-security-of-api-keys-v5kp3wdu
 
 The basic idea is, to prevent unauthorised access of a public endpoint by bots or bad clients. Only known clients should be able to use the api. For example when you have a `POST` interface which should only be able to be requested by your own website. All requests from other clients to this public `POST` endpoint should be rejected.
 
-This Repository introduces a separate serive, the "Anonymus API Auth Provider" (`aaap`), which can be requested to retrieve an access-token. The public endpoint can then validate this token.
+This Repository introduces a separate serive, the "Anonymous API Auth Provider" (`aaap`), which can be requested to retrieve an access-token. The public endpoint can then validate this token.
 
 The `aaap` and the public endpoint therefore share an api-key as secret. The `aaap` signs the token with the api-key and the public endpoint can check if the signature was signed with this api-key. Otherwise the public endpoint would reject the request.
 
